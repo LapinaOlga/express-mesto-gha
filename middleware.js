@@ -1,4 +1,4 @@
-const TEST_USER_ID = '000000000000000000000000';
+const TEST_USER_ID = '5d8b8592978f8bd833ca8133';
 const User = require('./models/user');
 
 module.exports.authMiddleware = async (req, res, next) => {
