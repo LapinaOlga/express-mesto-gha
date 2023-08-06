@@ -7,6 +7,15 @@ const { authMiddleware, errorHandlerMiddleware } = require('./middleware');
 
 const app = express();
 
+// Костыль для яндекса
+app.use((req, res, next) => {
+  req.user = {
+    _id: '5d8b8592978f8bd833ca8133',
+  };
+
+  next();
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware);
