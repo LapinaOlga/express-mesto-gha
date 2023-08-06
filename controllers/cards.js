@@ -47,7 +47,11 @@ module.exports.deleteCardById = async (req, res, next) => {
 
     res.send({ data: null });
   } catch (error) {
-    next(error);
+    if (error.message.startsWith('Cast to ObjectId failed')) {
+      next(new BadRequestError('ID пользователя указан неверно'));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -74,7 +78,11 @@ module.exports.addLikeToCard = async (req, res, next) => {
     const resultCard = await Card.findById(req.params.id);
     res.send({ data: await convertCard(resultCard) });
   } catch (error) {
-    next(error);
+    if (error.message.startsWith('Cast to ObjectId failed')) {
+      next(new BadRequestError('ID пользователя указан неверно'));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -101,6 +109,10 @@ module.exports.deleteLikeFromCard = async (req, res, next) => {
     const resultCard = await Card.findById(req.params.id);
     res.send({ data: await convertCard(resultCard) });
   } catch (error) {
-    next(error);
+    if (error.message.startsWith('Cast to ObjectId failed')) {
+      next(new BadRequestError('ID карточки указан неверно'));
+    } else {
+      next(error);
+    }
   }
 };
