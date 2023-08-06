@@ -16,9 +16,7 @@ module.exports.authMiddleware = async (req, res, next) => {
       });
     }
 
-    req.user = {
-      _id: TEST_USER_ID,
-    };
+    req.user = user;
     next();
   } catch (e) {
     next(e);
