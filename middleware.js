@@ -1,4 +1,4 @@
-const TEST_USER_ID = '5d8b8592978f8bd833ca8133';
+const TEST_USER_ID = '000000000000000000000000';
 const User = require('./models/user');
 
 module.exports.authMiddleware = async (req, res, next) => {
@@ -31,9 +31,12 @@ module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
   let status = 500;
   let message = 'Произошла непредвиденная ошибка';
 
-  // Внутренняя ошибка.
   if (typeof err.statusCode === 'function') {
+    // Внутренняя ошибка.
     status = err.statusCode();
+    message = err.message;
+  } else if (err.message.includes('validation failed')) {
+    status = 400;
     message = err.message;
   }
 
