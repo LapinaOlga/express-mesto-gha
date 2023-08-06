@@ -44,3 +44,7 @@ module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
 
   return null;
 };
+
+module.exports.notFoundMiddleware = async (req, res) => {
+  res.status(404).send({ message: 'Page not found' });
+};
