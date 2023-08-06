@@ -35,7 +35,7 @@ module.exports.getUserById = async (req, res, next) => {
     res.send({ data: convertUser(user) });
   } catch (e) {
     if (e.message.startsWith('Cast to ObjectId failed')) {
-      next(new NotFoundError('Пользователь не найден'));
+      next(new BadRequestError('ID пользователя указан неверно'));
     } else {
       next(e);
     }
