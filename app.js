@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
-const { authMiddleware, errorHandlerMiddleware } = require('./middleware');
+const { authMiddleware, errorHandlerMiddleware, notFoundMiddleware } = require('./middleware');
 
 const app = express();
 
-// Костыль для яндекса
+// Костыль для тестов
 app.use((req, res, next) => {
   req.user = {
     _id: '5d8b8592978f8bd833ca8133',
@@ -23,13 +23,10 @@ app.use('/', userRoutes);
 app.use('/', cardRoutes);
 
 module.exports = mongoose.connect('mongodb://localhost:27017/mestodb', {
-  // user: 'root',
-  // pass: 'password',
   useNewUrlParser: true,
-  // useCreateIndex: true,
-  // useFindAndModify: false,
 });
 
 app.use(errorHandlerMiddleware);
+app.use(notFoundMiddleware);
 
 app.listen(3000);
