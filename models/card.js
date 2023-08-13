@@ -1,6 +1,6 @@
+const { URL } = require('url');
 const mongoose = require('mongoose');
-const { ObjectId } = require('mongodb');
-// Опишем схему:
+
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -11,15 +11,28 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator(value) {
+        try {
+          new URL(value);
+
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      message: 'Поле link должен содержать валидный URL',
+    },
   },
   owner: {
-    type: ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: 'User',
   },
   likes: [{
-    type: ObjectId,
-    required: true,
-    // default: [],
+    type: mongoose.Schema.Types.ObjectId,
+    default: [],
+    ref: 'User',
   }],
   createdAt: {
     type: Date,
@@ -28,4 +41,4 @@ const cardSchema = new mongoose.Schema({
 });
 
 // создаём модель и экспортируем её
-module.exports = mongoose.model('card', cardSchema);
+module.exports = mongoose.model('Card', cardSchema);

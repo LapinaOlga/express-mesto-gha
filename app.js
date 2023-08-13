@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
-const { authMiddleware, errorHandlerMiddleware, notFoundMiddleware } = require('./middleware');
+const {
+  authMiddleware, errorHandlerMiddleware, notFoundMiddleware,
+} = require('./middleware');
 
 const app = express();
 
@@ -16,17 +17,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(authMiddleware);
-app.use('/', userRoutes);
-app.use('/', cardRoutes);
+app.use('/users', userRoutes);
+app.use('/cards', cardRoutes);
 
 module.exports = mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
-app.use(errorHandlerMiddleware);
 app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 
 app.listen(3000);

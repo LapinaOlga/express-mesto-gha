@@ -23,28 +23,24 @@ module.exports.authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
-  if (res.headersSent) {
-    return next(err);
-  }
+module.exports.notFoundMiddleware = async (req, res) => {
+  res.status(404).send({ message: 'Page not found' });
+};
 
+module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
   let status = 500;
   let message = 'Произошла непредвиденная ошибка';
 
   if (typeof err.statusCode === 'function') {
-    // Внутренняя ошибка.
     status = err.statusCode();
     message = err.message;
-  } else if (err.message.includes('validation failed')) {
+  } else if (err.name === 'ValidationError') {
+    const firstKey = Object.keys(err.errors)[0];
     status = 400;
-    message = err.message;
+    message = err.errors[firstKey].message;
   }
 
   res.status(status).send({ message });
 
   return null;
-};
-
-module.exports.notFoundMiddleware = async (req, res) => {
-  res.status(404).send({ message: 'Page not found' });
 };

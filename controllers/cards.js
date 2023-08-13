@@ -19,19 +19,14 @@ module.exports.getAllCards = async (req, res, next) => {
 
 module.exports.createCard = async (req, res, next) => {
   try {
-    if (!req.body
-      || typeof req.body !== 'object'
-      || !Object.hasOwnProperty.call(req.body, 'name')
-      || !Object.hasOwnProperty.call(req.body, 'link')
-    ) {
-      throw new BadRequestError('Данные карточки переданы неверно');
-    }
+    const card = await Card.create({
+      ...req.body,
+      owner: req.user._id,
+    });
 
-    const { name, link } = req.body;
+    card.owner = req.user;
 
-    const card = await Card.create({ name, link, owner: req.user._id });
-
-    res.send({ data: await convertCard(card) });
+    res.status(201).send({ data: await convertCard(card) });
   } catch (error) {
     next(error);
   }
@@ -47,8 +42,8 @@ module.exports.deleteCardById = async (req, res, next) => {
 
     res.send({ data: null });
   } catch (error) {
-    if (error.message.startsWith('Cast to ObjectId failed')) {
-      next(new BadRequestError('ID пользователя указан неверно'));
+    if (error.name === 'CastError') {
+      next(new BadRequestError('ID карточки указан неверно'));
     } else {
       next(error);
     }
@@ -63,23 +58,20 @@ module.exports.addLikeToCard = async (req, res, next) => {
       throw new NotFoundError('Карточка не найдена');
     }
 
-    // Проверяем, есть ли лайк от текущего пользователя
-    const hasLikeFromCurrentUser = card.likes.some((userId) => `${userId}` === `${req.user._id}`);
-    if (hasLikeFromCurrentUser) {
-      throw new BadRequestError('Вы уже ставили лайк этой карточке');
-    }
+    const result = await Card
+      .findByIdAndUpdate(
+        card._id,
+        { $addToSet: { likes: new mongoose.Types.ObjectId(req.user._id) } },
+        { new: true, runValidators: true },
+      )
+      .populate('owner')
+      .populate('likes')
+      .exec();
 
-    await Card.findByIdAndUpdate(
-      card._id,
-      { $addToSet: { likes: new mongoose.Types.ObjectId(req.user._id) } },
-      { new: true },
-    );
-
-    const resultCard = await Card.findById(req.params.id);
-    res.send({ data: await convertCard(resultCard) });
+    res.send({ data: await convertCard(result) });
   } catch (error) {
-    if (error.message.startsWith('Cast to ObjectId failed')) {
-      next(new BadRequestError('ID пользователя указан неверно'));
+    if (error.name === 'CastError') {
+      next(new BadRequestError('ID карточки указан неверно'));
     } else {
       next(error);
     }
@@ -94,22 +86,19 @@ module.exports.deleteLikeFromCard = async (req, res, next) => {
       throw new NotFoundError('Карточка не найдена');
     }
 
-    // Проверяем, есть ли лайк от текущего пользователя
-    const hasLikeFromCurrentUser = card.likes.some((userId) => `${userId}` === `${req.user._id}`);
-    if (!hasLikeFromCurrentUser) {
-      throw new BadRequestError('Вы еще не ставили лайк этой карточке');
-    }
+    const result = await Card
+      .findByIdAndUpdate(
+        card._id,
+        { $pull: { likes: new mongoose.Types.ObjectId(req.user._id) } },
+        { new: true, runValidators: true },
+      )
+      .populate('owner')
+      .populate('likes')
+      .exec();
 
-    await Card.findByIdAndUpdate(
-      card._id,
-      { $pull: { likes: new mongoose.Types.ObjectId(req.user._id) } },
-      { new: true },
-    );
-
-    const resultCard = await Card.findById(req.params.id);
-    res.send({ data: await convertCard(resultCard) });
+    res.send({ data: await convertCard(result) });
   } catch (error) {
-    if (error.message.startsWith('Cast to ObjectId failed')) {
+    if (error.name === 'CastError') {
       next(new BadRequestError('ID карточки указан неверно'));
     } else {
       next(error);
