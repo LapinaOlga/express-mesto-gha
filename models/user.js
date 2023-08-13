@@ -16,12 +16,13 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
+    required: true,
     validate: {
       validator(value) {
         try {
-          new URL(value);
+          const url = new URL(value);
 
-          return true;
+          return url !== null;
         } catch (e) {
           return false;
         }

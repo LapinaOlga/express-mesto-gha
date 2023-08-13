@@ -42,5 +42,6 @@ module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
 
   res.status(status).send({ message });
 
+  next();
   return null;
 };
