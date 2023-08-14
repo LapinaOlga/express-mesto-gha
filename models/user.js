@@ -1,4 +1,3 @@
-const { URL } = require('url');
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -17,19 +16,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     required: true,
-    validate: {
-      validator(value) {
-        try {
-          const url = new URL(value);
-
-          return url !== null;
-        } catch (e) {
-          return false;
-        }
-      },
-      message: 'Поле avatar должен содержать валидный URL',
-    },
   },
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('user', userSchema);

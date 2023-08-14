@@ -1,5 +1,6 @@
 const TEST_USER_ID = '000000000000000000000000';
 const User = require('./models/user');
+const { HTTP_INTERNAL_ERROR, HTTP_NOT_FOUND, HTTP_BAD_REQUEST } = require('./enums/httpCodes');
 
 module.exports.authMiddleware = async (req, res, next) => {
   let user;
@@ -24,11 +25,11 @@ module.exports.authMiddleware = async (req, res, next) => {
 };
 
 module.exports.notFoundMiddleware = async (req, res) => {
-  res.status(404).send({ message: 'Page not found' });
+  res.status(HTTP_NOT_FOUND).send({ message: 'Page not found' });
 };
 
 module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
-  let status = 500;
+  let status = HTTP_INTERNAL_ERROR;
   let message = 'Произошла непредвиденная ошибка';
 
   if (typeof err.statusCode === 'function') {
@@ -36,7 +37,7 @@ module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
     message = err.message;
   } else if (err.name === 'ValidationError') {
     const firstKey = Object.keys(err.errors)[0];
-    status = 400;
+    status = HTTP_BAD_REQUEST;
     message = err.errors[firstKey].message;
   }
 

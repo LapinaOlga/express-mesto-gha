@@ -3,6 +3,7 @@ const Card = require('../models/card');
 const { convertCard } = require('../utils/convertCard');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const { HTTP_CREATED } = require('../enums/httpCodes');
 
 module.exports.getAllCards = async (req, res, next) => {
   try {
@@ -26,7 +27,7 @@ module.exports.createCard = async (req, res, next) => {
 
     card.owner = req.user;
 
-    res.status(201).send({ data: await convertCard(card) });
+    res.status(HTTP_CREATED).send({ data: await convertCard(card) });
   } catch (error) {
     next(error);
   }
@@ -62,7 +63,7 @@ module.exports.addLikeToCard = async (req, res, next) => {
       .findByIdAndUpdate(
         card._id,
         { $addToSet: { likes: new mongoose.Types.ObjectId(req.user._id) } },
-        { new: true, runValidators: true },
+        { new: true },
       )
       .populate('owner')
       .populate('likes')
@@ -90,7 +91,7 @@ module.exports.deleteLikeFromCard = async (req, res, next) => {
       .findByIdAndUpdate(
         card._id,
         { $pull: { likes: new mongoose.Types.ObjectId(req.user._id) } },
-        { new: true, runValidators: true },
+        { new: true },
       )
       .populate('owner')
       .populate('likes')
