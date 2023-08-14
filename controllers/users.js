@@ -50,7 +50,7 @@ module.exports.updateCurrentUser = async (req, res, next) => {
         name: req.body.name || null,
         about: req.body.about || null,
       },
-      { new: true },
+      { new: true, runValidators: true },
     );
     res.send({ data: convertUser(req.user) });
   } catch (e) {
@@ -63,7 +63,7 @@ module.exports.updateCurrentUserAvatar = async (req, res, next) => {
     req.user = await User.findByIdAndUpdate(
       req.user._id,
       { avatar: req.body.avatar || null },
-      { new: true },
+      { new: true, runValidators: true },
     );
     res.send({ data: convertUser(req.user) });
   } catch (e) {
