@@ -1,10 +1,11 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const validator = require('validator');
 const User = require('../models/user');
 const { convertUser } = require('../utils/convertUser');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-const { HTTP_CREATED } = require('../enums/httpCodes');
+const { HTTP_CREATED, HTTP_BAD_REQUEST } = require('../enums/httpCodes');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const UserExistsError = require('../errors/UserExistsError');
 
@@ -99,7 +100,20 @@ module.exports.updateCurrentUserAvatar = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email || '' })
+    const { email, password } = req.body;
+
+    if (typeof email !== 'string' || !validator.isEmail(email)) {
+      res.status(HTTP_BAD_REQUEST).send({ message: 'Поле email должно содержать валидный email' });
+      return;
+    } if (typeof password !== 'string') {
+      res.status(HTTP_BAD_REQUEST).send({ message: 'Поле password обязательно к заполнению' });
+      return;
+    } if (password.length < 10) {
+      res.status(HTTP_BAD_REQUEST).send({ message: 'Поле password не может быть короче 10 символов' });
+      return;
+    }
+
+    const user = await User.findOne({ email })
       .select('+password');
 
     if (!user) {
@@ -107,7 +121,6 @@ module.exports.login = async (req, res, next) => {
     }
 
     // Проверяем пароль
-    const password = req.body.password || '';
     if (!bcrypt.compareSync(password, user.password)) {
       throw new UnauthorizedError();
     }
@@ -117,6 +130,6 @@ module.exports.login = async (req, res, next) => {
       token: jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' }),
     });
   } catch (e) {
-    next(new UnauthorizedError());
+    next(e);
   }
 };
