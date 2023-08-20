@@ -4,6 +4,7 @@ const { convertCard } = require('../utils/convertCard');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const { HTTP_CREATED } = require('../enums/httpCodes');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getAllCards = async (req, res, next) => {
   try {
@@ -39,6 +40,10 @@ module.exports.deleteCardById = async (req, res, next) => {
 
     if (!card) {
       throw new NotFoundError('Карточка не найдена');
+    }
+
+    if (card.owner !== req.user._id) {
+      throw new ForbiddenError('Вы не можете удалять чужие карточки');
     }
 
     res.send({ data: null });

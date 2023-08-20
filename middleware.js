@@ -1,20 +1,40 @@
-const TEST_USER_ID = '000000000000000000000000';
+const jwt = require('jsonwebtoken');
 const User = require('./models/user');
-const { HTTP_INTERNAL_ERROR, HTTP_NOT_FOUND, HTTP_BAD_REQUEST } = require('./enums/httpCodes');
+const {
+  HTTP_INTERNAL_ERROR, HTTP_NOT_FOUND, HTTP_BAD_REQUEST,
+} = require('./enums/httpCodes');
+const ProtectedRouteError = require('./errors/ProtectedRouteError');
 
 module.exports.authMiddleware = async (req, res, next) => {
-  let user;
+  if (['/signin', '/signup'].includes(req.url)) {
+    next();
+    return;
+  }
+
+  const { authorization } = req.headers;
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    next(new ProtectedRouteError());
+    return;
+  }
+
+  const token = authorization.replace('Bearer ', '');
+  let payload;
 
   try {
-    user = await User.findById(TEST_USER_ID);
+    payload = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (err) {
+    next(new ProtectedRouteError());
+    return;
+  }
+
+  try {
+    // Пользователь может быть удален, а JWT токен при этом будет активным.
+    // Дополнительно проверяем этот кейс.
+    const user = await User.findById(payload._id);
 
     if (!user) {
-      user = await User.create({
-        _id: TEST_USER_ID,
-        name: 'Тестовый пользователь',
-        about: 'Информация о себе',
-        avatar: 'https://pixabay.com/photos/crazy-horse-memorial-native-american-4577682/',
-      });
+      throw new ProtectedRouteError();
     }
 
     req.user = user;
