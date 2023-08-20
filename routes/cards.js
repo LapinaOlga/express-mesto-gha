@@ -3,13 +3,19 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getAllCards, createCard, deleteCardById, addLikeToCard, deleteLikeFromCard,
 } = require('../controllers/cards');
+const { validateUrl } = require('../utils/validateUrl');
 
 router.get('', getAllCards);
 
 router.post('', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().uri(),
+    link: Joi.string().required().custom((value, helper) => {
+      if (validateUrl(value)) {
+        return true;
+      }
+      return helper.message('Поле link содержит невалидный URL');
+    }),
   }),
 }), createCard);
 
