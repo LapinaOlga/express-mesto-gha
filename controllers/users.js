@@ -108,7 +108,7 @@ module.exports.login = async (req, res, next) => {
     } if (typeof password !== 'string') {
       res.status(HTTP_BAD_REQUEST).send({ message: 'Поле password обязательно к заполнению' });
       return;
-    } if (password.length < 10) {
+    } if (password.length < 8) {
       res.status(HTTP_BAD_REQUEST).send({ message: 'Поле password не может быть короче 10 символов' });
       return;
     }
