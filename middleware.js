@@ -6,14 +6,12 @@ const {
 const ProtectedRouteError = require('./errors/ProtectedRouteError');
 
 module.exports.authMiddleware = async (req, res, next) => {
-  const { authorization } = req.headers;
-
-  if (!authorization) {
-    // Если заголовка нет, то пропускаем дальше.
-    // Либо будет ошибка валидации, либо это авторизация/регистрация
+  if (['/signin', '/signup'].includes(req.url)) {
     next();
     return;
   }
+
+  const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
     next(new ProtectedRouteError());
