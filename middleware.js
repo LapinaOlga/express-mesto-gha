@@ -11,14 +11,13 @@ module.exports.authMiddleware = async (req, res, next) => {
     return;
   }
 
-  const { authorization } = req.headers;
+  const token = req.cookies.jwt;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  if (!token) {
     next(new ProtectedRouteError());
     return;
   }
 
-  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
