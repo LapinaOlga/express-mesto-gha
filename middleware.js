@@ -12,6 +12,7 @@ module.exports.authMiddleware = async (req, res, next) => {
     // Если заголовка нет, то пропускаем дальше.
     // Либо будет ошибка валидации, либо это авторизация/регистрация
     next();
+    return;
   }
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
