@@ -71,12 +71,10 @@ module.exports.getCurrentUser = async (req, res, next) => {
 
 module.exports.updateCurrentUser = async (req, res, next) => {
   try {
+    const { name, about } = req.body;
     req.user = await User.findByIdAndUpdate(
       req.user._id,
-      {
-        name: req.body.name || null,
-        about: req.body.about || null,
-      },
+      { name, about },
       { new: true, runValidators: true },
     );
     res.send({ data: convertUser(req.user) });
@@ -87,9 +85,11 @@ module.exports.updateCurrentUser = async (req, res, next) => {
 
 module.exports.updateCurrentUserAvatar = async (req, res, next) => {
   try {
+    const { avatar } = req.body;
+
     req.user = await User.findByIdAndUpdate(
       req.user._id,
-      { avatar: req.body.avatar || null },
+      { avatar },
       { new: true, runValidators: true },
     );
     res.send({ data: convertUser(req.user) });
@@ -101,17 +101,6 @@ module.exports.updateCurrentUserAvatar = async (req, res, next) => {
 module.exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
-    if (typeof email !== 'string' || !validator.isEmail(email)) {
-      res.status(HTTP_BAD_REQUEST).send({ message: 'Поле email должно содержать валидный email' });
-      return;
-    } if (typeof password !== 'string') {
-      res.status(HTTP_BAD_REQUEST).send({ message: 'Поле password обязательно к заполнению' });
-      return;
-    } if (password.length < 8) {
-      res.status(HTTP_BAD_REQUEST).send({ message: 'Поле password не может быть короче 10 символов' });
-      return;
-    }
 
     const user = await User.findOne({ email })
       .select('+password');
