@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
 
 const userRoutes = require('./routes/users');
@@ -26,6 +27,7 @@ module.exports = mongoose.connect(process.env.MONGO_DSN, {
 });
 
 app.use(notFoundMiddleware);
+app.use(errors());
 app.use(errorHandlerMiddleware);
 
 app.listen(3000);
