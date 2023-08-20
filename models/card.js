@@ -4,13 +4,13 @@ const { validateUrl } = require('../utils/validateUrl');
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+    required: [true, 'Поле name обязательно к заполнению'],
+    minlength: [2, 'Поле name не может быть короче 2х символов'],
+    maxlength: [30, 'Поле name не может быть длиннее 30 символов'],
   },
   link: {
     type: String,
-    required: true,
+    required: [true, 'Поле link обязательно для заполнения'],
     validate: {
       validator: validateUrl,
       message: (props) => `${props.value} is not a valid url!`,
