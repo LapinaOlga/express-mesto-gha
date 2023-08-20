@@ -21,7 +21,8 @@ app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 app.use(signRoutes);
 
-module.exports = mongoose.connect(process.env.MONGO_DSN, {
+const mongoDsn = process.env.MONGO_DSN || 'mongodb://localhost:27017/mestodb';
+module.exports = mongoose.connect(mongoDsn, {
   useNewUrlParser: true,
 });
 
