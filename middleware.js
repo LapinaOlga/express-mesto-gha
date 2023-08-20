@@ -50,7 +50,7 @@ module.exports.notFoundMiddleware = async (req, res) => {
 
 module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
   let status = HTTP_INTERNAL_ERROR;
-  let message = 'Произошла непредвиденная ошибка';
+  let message = err.message || 'Произошла непредвиденная ошибка';
 
   if (typeof err.statusCode === 'function') {
     status = err.statusCode();
