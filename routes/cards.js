@@ -12,7 +12,7 @@ router.post('', celebrate({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().custom((value, helper) => {
       if (validateUrl(value)) {
-        return true;
+        return value;
       }
       return helper.message('Поле link содержит невалидный URL');
     }),
