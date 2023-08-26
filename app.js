@@ -8,6 +8,9 @@ const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 const signRoutes = require('./routes/sign');
 
+// Костыль для тестов
+process.env.JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? process.env.JWT_SECRET : 'dev-secret');
+
 const {
   authMiddleware, errorHandlerMiddleware, notFoundMiddleware,
 } = require('./middleware');
