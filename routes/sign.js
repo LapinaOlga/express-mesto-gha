@@ -18,7 +18,7 @@ router.post('/signup', celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().custom((value, helper) => {
       if (validateUrl(value)) {
-        return true;
+        return value;
       }
       return helper.message('Поле avatar содержит невалидный URL');
     }),
