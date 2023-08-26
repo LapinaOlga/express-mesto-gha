@@ -17,7 +17,7 @@ router.patch('/me/avatar', celebrate({
   body: {
     avatar: Joi.string().required().custom((value, helper) => {
       if (validateUrl(value)) {
-        return true;
+        return value;
       }
       return helper.message('Поле avatar содержит невалидный URL');
     }),
