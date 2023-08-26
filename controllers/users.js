@@ -113,7 +113,7 @@ module.exports.login = async (req, res, next) => {
       throw new UnauthorizedError();
     }
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('jwt', token, { maxAge: 10800, sameSite: true })
+    res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, sameSite: true })
       .send({ message: 'Успешно' });
   } catch (e) {
     next(e);
