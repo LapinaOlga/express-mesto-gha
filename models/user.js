@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://randomwordgenerator.com/img/picture-generator/52e1d6444b56b10ff3d8992cc12c30771037dbf85254784b772872d2944e_640.jpg',
     validate: {
-      validator: validateUrl,
+      validator: (v) => validateUrl(v),
       message: 'Поле avatar должно быть валидным URL',
     },
   },
