@@ -1,6 +1,6 @@
 const { HTTP_INTERNAL_ERROR, HTTP_BAD_REQUEST } = require('../enums/httpCodes');
 
-module.exports.errorHandlerMiddleware = async (err, req, res, next) => {
+module.exports = async (err, req, res, next) => {
   let status = HTTP_INTERNAL_ERROR;
   let message = err.message || 'Произошла непредвиденная ошибка';
 
