@@ -2,12 +2,7 @@ const jwt = require('jsonwebtoken');
 const ProtectedRouteError = require('../errors/ProtectedRouteError');
 const User = require('../models/user');
 
-module.exports.authMiddleware = async (req, res, next) => {
-  if (['/signin', '/signup'].includes(req.url)) {
-    next();
-    return;
-  }
-
+module.exports = async (req, res, next) => {
   const token = req.cookies.jwt;
 
   if (!token) {
@@ -30,7 +25,8 @@ module.exports.authMiddleware = async (req, res, next) => {
     const user = await User.findById(payload._id);
 
     if (!user) {
-      throw new ProtectedRouteError();
+      next(new ProtectedRouteError());
+      return;
     }
 
     req.user = user;
