@@ -1,5 +1,5 @@
-const { HTTP_NOT_FOUND } = require('../enums/httpCodes');
+const NotFoundError = require('../errors/NotFoundError');
 
-module.exports.notFoundMiddleware = async (req, res) => {
-  res.status(HTTP_NOT_FOUND).send({ message: 'Page not found' });
+module.exports.notFoundMiddleware = async () => {
+  throw new NotFoundError();
 };
