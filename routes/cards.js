@@ -22,19 +22,19 @@ router.post('', authMiddleware, celebrate({
 
 router.delete('/:id', authMiddleware, celebrate({
   params: {
-    id: Joi.string().required().alphanum().length(24),
+    id: Joi.string().required().hex().length(24),
   },
 }), deleteCardById);
 
 router.put('/:id/likes', authMiddleware, celebrate({
   params: {
-    id: Joi.string().required().alphanum().length(24),
+    id: Joi.string().required().hex().length(24),
   },
 }), addLikeToCard);
 
 router.delete('/:id/likes', authMiddleware, celebrate({
   params: {
-    id: Joi.string().required().alphanum().length(24),
+    id: Joi.string().required().hex().length(24),
   },
 }), deleteLikeFromCard);
 
