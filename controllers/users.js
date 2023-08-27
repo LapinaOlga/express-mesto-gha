@@ -62,7 +62,7 @@ module.exports.getAllUsers = async (req, res, next) => {
 
 module.exports.getCurrentUser = async (req, res, next) => {
   try {
-    res.send({ data: convertUser(req.user, true) });
+    res.send({ data: convertUser(req.user) });
   } catch (e) {
     next(e);
   }
