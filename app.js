@@ -11,9 +11,9 @@ const cardRoutes = require('./routes/cards');
 const signRoutes = require('./routes/sign');
 
 // "middleware" не имеет множественной формы. Поэтому используем директорию "middleware".
-const authMiddleware = require('./middleware/auth');
-const notFoundMiddleware = require('./middleware/notFound');
-const errorHandlerMiddleware = require('./middleware/errorHandler');
+const { authMiddleware } = require('./middleware/auth');
+const { notFoundMiddleware } = require('./middleware/notFound');
+const { errorHandlerMiddleware } = require('./middleware/errorHandler');
 
 // Костыль для тестов
 process.env.JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? process.env.JWT_SECRET : 'dev-secret');
@@ -38,11 +38,12 @@ app.use('/cards', cardRoutes);
 app.use(signRoutes);
 app.use(notFoundMiddleware);
 app.use(errors());
-app.use(errorHandlerMiddleware);
 
 const mongoDsn = process.env.MONGO_DSN || 'mongodb://localhost:27017/mestodb';
 module.exports = mongoose.connect(mongoDsn, {
   useNewUrlParser: true,
 });
+
+app.use(errorHandlerMiddleware);
 
 app.listen(3000);
