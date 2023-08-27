@@ -4,10 +4,11 @@ const {
   getAllCards, createCard, deleteCardById, addLikeToCard, deleteLikeFromCard,
 } = require('../controllers/cards');
 const { validateUrl } = require('../utils/validateUrl');
+const authMiddleware = require('../middleware/auth');
 
 router.get('', getAllCards);
 
-router.post('', celebrate({
+router.post('', authMiddleware, celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().custom((value, helper) => {
@@ -19,19 +20,19 @@ router.post('', celebrate({
   }),
 }), createCard);
 
-router.delete('/:id', celebrate({
+router.delete('/:id', authMiddleware, celebrate({
   params: {
     id: Joi.string().required().alphanum().length(24),
   },
 }), deleteCardById);
 
-router.put('/:id/likes', celebrate({
+router.put('/:id/likes', authMiddleware, celebrate({
   params: {
     id: Joi.string().required().alphanum().length(24),
   },
 }), addLikeToCard);
 
-router.delete('/:id/likes', celebrate({
+router.delete('/:id/likes', authMiddleware, celebrate({
   params: {
     id: Joi.string().required().alphanum().length(24),
   },
