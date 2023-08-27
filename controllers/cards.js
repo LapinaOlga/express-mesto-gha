@@ -38,15 +38,17 @@ module.exports.createCard = async (req, res, next) => {
 
 module.exports.deleteCardById = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndDelete(req.params.id);
+    const card = await Card.findById(req.params.id);
 
     if (!card) {
       throw new NotFoundError('Карточка не найдена');
     }
 
-    if (card.owner !== req.user._id) {
+    if (card.owner.toString() !== req.user._id.toString()) {
       throw new ForbiddenError('Вы не можете удалять чужие карточки');
     }
+
+    await Card.findByIdAndDelete(card.id);
 
     res.send({ data: null });
   } catch (error) {
