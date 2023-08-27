@@ -26,7 +26,7 @@ router.patch('/me/avatar', authMiddleware, celebrate({
 }), updateCurrentUserAvatar);
 router.get('/:id', authMiddleware, celebrate({
   params: {
-    id: Joi.string().required().alphanum().length(24),
+    id: Joi.string().required().hex().length(24),
   },
 }), getUserById);
 
