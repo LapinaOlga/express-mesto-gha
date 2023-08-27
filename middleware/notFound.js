@@ -1,5 +1,5 @@
 const NotFoundError = require('../errors/NotFoundError');
 
-module.exports.notFoundMiddleware = async () => {
-  throw new NotFoundError();
+module.exports = async (req, res, next) => {
+  next(new NotFoundError());
 };
