@@ -13,11 +13,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: [2, 'Поле about не может быть короче 2х символов'],
     maxlength: [30, 'Поле about не может быть длиннее 30 символов'],
-    default: 'Исследователь океана',
+    default: 'Исследователь',
   },
   avatar: {
     type: String,
-    default: 'https://randomwordgenerator.com/img/picture-generator/52e1d6444b56b10ff3d8992cc12c30771037dbf85254784b772872d2944e_640.jpg',
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator: (v) => validateUrl(v),
       message: 'Поле avatar должно быть валидным URL',
