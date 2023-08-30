@@ -10,9 +10,9 @@ const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 const signRoutes = require('./routes/sign');
 
-// "middleware" не имеет множественной формы. Поэтому используем директорию "middleware".
 const notFoundMiddleware = require('./middleware/notFound');
 const errorHandlerMiddleware = require('./middleware/errorHandler');
+const { requestLogger, errorLogger } = require('./middleware/logger');
 
 // Костыль для тестов
 process.env.JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? process.env.JWT_SECRET : 'dev-secret');
@@ -21,6 +21,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(requestLogger);
 app.use(helmet());
 app.use(
   rateLimit({
@@ -35,6 +36,7 @@ app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 app.use(signRoutes);
 app.use(notFoundMiddleware);
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandlerMiddleware);
 
